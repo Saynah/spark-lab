@@ -1,9 +1,10 @@
 REGISTER 'string_manip.py' using jython as str_func;
 
-price = LOAD 'hdfs://localhost:9000/user/price_data_full' 
-	USING PigStorage(';') 
-	AS (time:chararray, price:double, volume:int);
+reddit_data = LOAD 's3n://reddit-comments/2008/' 
+	      USING JsonLoader(); 
 
+DESCRIBE reddit_data;
+/*
 price_modified = FOREACH price GENERATE str_func.conv_to_30min(time) AS time, 
 					price AS price, 
 					volume AS volume;
@@ -15,4 +16,4 @@ compressed = FOREACH grpd GENERATE group AS time,
 				   SUM(price_modified.volume);
 
 STORE compressed INTO 'price_data_full_pig';
-
+*/

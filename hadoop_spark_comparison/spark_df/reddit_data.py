@@ -1,4 +1,4 @@
-from pyspark import SparkContext
+from pyspark import SparkContext, StorageLevel
 from pyspark.sql import SQLContext
 from pyspark.sql.types import *
 
@@ -28,7 +28,7 @@ fields = [StructField("archived", BooleanType(), True),
           StructField("subreddit_id", StringType(), True),
           StructField("ups", LongType(), True),
           StructField("year", LongType(), True)]
-rawDF = sqlContext.read.json("s3n://reddit-comments/2007", StructType(fields))
+rawDF = sqlContext.read.json("s3n://reddit-comments/2008", StructType(fields)).persist(StorageLevel.MEMORY_AND_DISK_SER)
 
 rawDF.registerTempTable("rc")
 
@@ -39,4 +39,12 @@ unique_authors_per_subreddit_df = sqlContext.sql("""
     ORDER BY author_cnt DESC
     """)
 
-unique_authors_per_subreddit_df.rdd.saveAsTextFile("hdfs://52.33.233.229:9000/spark-output")
+unique_subreddits_per_author_df = sqlContext.sql("""
+    SELECT author, COUNT(DISTINCT subreddit) as subreddit_cnt
+    FROM rc
+    GROUP BY author
+    ORDER BY subreddit_cnt DESC
+    """)
+
+unique_authors_per_subreddit_df.rdd.coalesce(1).saveAsTextFile("hdfs://52.34.38.95:9000/user/spark-output1")
+unique_subreddits_per_author_df.rdd.coalesce(1).saveAsTextFile("hdfs://52.34.38.95:9000/user/spark-output2")
