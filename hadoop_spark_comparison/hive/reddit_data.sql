@@ -15,15 +15,28 @@ FROM reddit_data a
   LATERAL VIEW json_tuple(a.value, 'author', 'subreddit') b 
 	AS author, subreddit 
 GROUP BY b.subreddit 
-ORDER BY author_cnt DESC;
+ORDER BY author_cnt DESC, b.subreddit;
 
-INSERT OVERWRITE DIRECTORY '/user/hive-output2'
-ROW FORMAT DELIMITED
-FIELDS TERMINATED BY ' '
-LINES TERMINATED BY '\n'
-SELECT b.author, COUNT(DISTINCT b.subreddit) AS subreddit_cnt
-FROM reddit_data a 
-  LATERAL VIEW json_tuple(a.value, 'author', 'subreddit') b 
-	AS author, subreddit 
-GROUP BY b.author 
-ORDER BY subreddit_cnt DESC;
+--INSERT OVERWRITE DIRECTORY '/user/hive-output2'
+--ROW FORMAT DELIMITED
+--FIELDS TERMINATED BY ' '
+--LINES TERMINATED BY '\n'
+--SELECT b.subreddit, COUNT(b.gilded) AS gilded_cnt
+--FROM reddit_data a 
+--  LATERAL VIEW json_tuple(a.value, 'gilded', 'subreddit') b 
+--	AS gilded, subreddit 
+--WHERE b.gilded > 0
+--GROUP BY b.subreddit 
+--ORDER BY gilded_cnt DESC, b.subreddit;
+
+--INSERT OVERWRITE DIRECTORY '/user/hive-output3'
+--ROW FORMAT DELIMITED
+--FIELDS TERMINATED BY ' '
+--LINES TERMINATED BY '\n'
+--SELECT b.author, COUNT(DISTINCT b.subreddit) AS subreddit_cnt
+--FROM reddit_data a 
+--  LATERAL VIEW json_tuple(a.value, 'author', 'subreddit') b 
+--	AS author, subreddit 
+--GROUP BY b.author 
+--ORDER BY subreddit_cnt DESC, b.author;
+

@@ -36,15 +36,25 @@ unique_authors_per_subreddit_df = sqlContext.sql("""
     SELECT subreddit, COUNT(DISTINCT author) as author_cnt
     FROM rc
     GROUP BY subreddit
-    ORDER BY author_cnt DESC
+    ORDER BY author_cnt DESC, subreddit
     """)
 
-unique_subreddits_per_author_df = sqlContext.sql("""
-    SELECT author, COUNT(DISTINCT subreddit) as subreddit_cnt
-    FROM rc
-    GROUP BY author
-    ORDER BY subreddit_cnt DESC
-    """)
+#gilded_comments_per_subreddit_df = sqlContext.sql("""
+#    SELECT subreddit, COUNT(gilded) as gilded_cnt
+#    FROM rc
+#    WHERE gilded > 0
+#    GROUP BY subreddit
+#    ORDER BY gilded_cnt DESC, subreddit
+#    """)
 
-unique_authors_per_subreddit_df.rdd.coalesce(1).saveAsTextFile("hdfs://52.34.38.95:9000/user/spark-output1")
-unique_subreddits_per_author_df.rdd.coalesce(1).saveAsTextFile("hdfs://52.34.38.95:9000/user/spark-output2")
+#unique_subreddits_per_author_df = sqlContext.sql("""
+#    SELECT author, COUNT(DISTINCT subreddit) as subreddit_cnt
+#    FROM rc
+#    GROUP BY author
+#    ORDER BY subreddit_cnt DESC, author
+#    """)
+
+unique_authors_per_subreddit_df.rdd.coalesce(1).saveAsTextFile("/user/spark-output1")
+#gilded_comments_per_subreddit_df.rdd.coalesce(1).saveAsTextFile("/user/spark-output2")
+#unique_subreddits_per_author_df.rdd.coalesce(1).saveAsTextFile("/user/spark-output3")
+
