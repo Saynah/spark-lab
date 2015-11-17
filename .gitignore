@@ -1,3 +1,4 @@
 *.log
 *.swp
 metastore_db
+*.ipynb_checkpoints
